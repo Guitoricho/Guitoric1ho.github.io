@@ -1,75 +1,61 @@
 <div align="center">
 
-# 🇨🇦 SAAQ Mastery: Quebec Driver's License Study Guide
-**The complete open-source solution for passing the Quebec Class 5 Knowledge Test.**
+# 🏎️ SAAQ Pro : Simulateur Haute-Fidélité v7.5
+**Une immersion totale dans l'examen de conduite du Québec. Apprenez par l'expérience, pas par cœur.**
 
-![Header](https://capsule-render.vercel.app/render?type=soft&color=auto&height=200&section=header&text=SAAQ%20Prep%202026&fontSize=80&animation=twinkling)
+![Header](https://capsule-render.vercel.app/render?type=soft&color=003399&height=200&section=header&text=SAAQ%20PRO%20v7.5&fontSize=80&animation=fadeIn)
 
-[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/yourlink)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Quebec](https://img.shields.io/badge/Quebec-0033AD?style=for-the-badge&logo=quebec&logoColor=white)](https://www.quebec.ca)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](http://makeapullrequest.com)
+[![Version](https://img.shields.io/badge/Version-7.5_Stable-00f2ff?style=for-the-badge&logo=target)](https://github.com/votre-repo)
+[![UI](https://img.shields.io/badge/Interface-High_Tech-ff3c00?style=for-the-badge&logo=air-canada)](https://github.com/votre-repo)
+[![Region](https://img.shields.io/badge/Region-Quebec_CA-003399?style=for-the-badge&logo=quebec&logoColor=white)](https://www.quebec.ca)
 
 ---
 
-[Explore Docs](#-documentation) • [Report Bug](https://github.com/yourusername/repo/issues) • [Request Feature](https://github.com/yourusername/repo/issues)
+### "L'expertise ne s'apprend pas, elle se simule."
+*Ce projet n'est pas un simple questionnaire. C'est un simulateur de tableau de bord interactif conçu pour maîtriser les systèmes critiques et la signalisation routière du Québec.*
 
 </div>
 
-## 📖 Overview
-Studying the **SAAQ (Société de l'assurance automobile du Québec)** handbook can be overwhelming. This project transforms the dry legal text of the *Highway Safety Code* into an interactive, high-retention learning experience.
+## 🛠️ Spécifications Techniques
 
-> [!IMPORTANT]
-> This tool is updated for the **2026 Quebec Road Safety** regulations.
+> [!TIP]
+> L'interface utilise un système de **Highlighter Dynamique** pour focaliser l'attention sur les jauges (RPM, Air, Vitesse) lors des questions critiques.
 
----
-
-## ✨ Key Features
-
-| Feature | Description | Status |
-| :--- | :--- | :--- |
-| **Exam Simulator** | 64-question mock exams matching the real SAAQ UI. | ✅ Ready |
-| **Sign Flashcards** | Practice identifying Warning, Mandatory, and Information signs. | 🚧 In Progress |
-| **Dark Mode** | Late-night study sessions made easy. | ✅ Ready |
-| **Logic Explainer** | Don't just memorize—understand the "Why" behind the laws. | ✅ Ready |
+* **Dashboard Engine :** Simulation temps-réel des manomètres (PSI) et du tachymètre.
+* **Visual Stack :** Intégration fluide via TailwindCSS et polices futuristes (Orbitron, JetBrains Mono).
+* **Sign Index :** Répertoire complet de 100+ panneaux de signalisation catégorisés.
+* **Expert System :** Logique de feedback immédiat sur les voyants d'alerte (ABS, Huile, Frein de parc).
 
 ---
 
-## 🛠️ Tech Stack
-
-<div align="left">
-
-- **Frontend:** ![React](https://img.shields.io/badge/react-%2320232a.svg?style=flat-square&logo=react&logoColor=%2361DAFB) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=flat-square&logo=tailwind-css&logoColor=white)
-- **Backend:** ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat-square&logo=node.js&logoColor=white)
-- **Deployment:** ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=flat-square&logo=vercel&logoColor=white)
-
-</div>
-
----
-
-## 📸 Screenshots
+## 📸 Aperçu du Cockpit
 
 <details>
-<summary><b>Click to expand app previews</b></summary>
+<summary><b>📐 Architecture de l'interface (Cliquez pour voir)</b></summary>
 
-| Dashboard | Mock Exam |
-| :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/400x200?text=Dashboard+Preview) | ![Exam](https://via.placeholder.com/400x200?text=Mock+Exam+UI) |
+| Module | Rôle | Technologie |
+| :--- | :--- | :--- |
+| **Gauges Pods** | Rendu des aiguilles et vitesse | CSS Transforms / JS State |
+| **LCD Display** | Alertes systèmes et messages critiques | Dynamic DOM Injection |
+| **Status Grid** | Monitoring des capteurs (SVG Libs) | SVG Vector Mapping |
 
 </details>
 
 ---
 
-## 🚥 Study Categories
+## 🚦 Catégories d'Examen Incluses
 
-- [x] **Category 1:** The Highway Safety Code (32 questions)
-- [x] **Category 2:** Road Signs and Signals (16 questions)
-- [ ] **Category 3:** Specialization/Heavy Vehicles (In Development)
+- [x] **Systèmes de Freinage à Air :** Gestion de la pression (Manomètres) et alertes sous 60 PSI.
+- [x] **Signalisation Routière :** Reconnaissance visuelle haute performance (100 types).
+- [x] **Comportement & Lois :** Maîtrise du Code de la sécurité routière du Québec.
+- [ ] **Simulateur de Conduite Hivernale :** (Prévu pour la v8.0).
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation & Lancement
 
-1. **Clone the repo**
+Le projet est "Zero-Dependency" (Standalone HTML/JS).
+
+1. **Cloner le projet**
    ```bash
-   git clone [https://github.com/yourusername/SAAQ-Mastery.git](https://github.com/yourusername/SAAQ-Mastery.git)
+   git clone [https://github.com/votre-utilisateur/SAAQ-Pro-v7.5.git](https://github.com/votre-utilisateur/SAAQ-Pro-v7.5.git)
