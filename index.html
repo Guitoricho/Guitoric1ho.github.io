@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAAQ Pro - Simulateur Haute Fidélité v11.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --quebec-blue: #003399;
+            --road-grey: #1a1a1a;
+        }
+
+        body {
+            background-color: #000;
+            color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- SCÈNE DE ROUTE RÉALISTE --- */
+        .scenery {
+            height: 45vh;
+            background: linear-gradient(to bottom, #05070a 0%, #1a1a2e 100%);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid #000;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: #111;
+            transform: perspective(400px) rotateX(45deg);
+            transform-origin: bottom;
+            border-top: 2px solid #333;
+        }
+
+        .road-lines {
+            position: absolute;
+            width: 12px;
+            height: 100%;
+            left: 50%;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 60px, #ffd500 60px, #ffd500 120px);
+            transform: translateX(-50%);
+            animation: roadMove 0.8s linear infinite;
+        }
+
+        @keyframes roadMove {
+            from { background-position: 0 0; }
+            to { background-position: 0 120px; }
+        }
+
+        /* --- DASHBOARD HAUTE QUALITÉ --- */
+        .dashboard-frame {
+            background: linear-gradient(to bottom, #0c0c0c, #050505);
+            height: 55vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 25px;
+            box-shadow: inset 0 40px 60px rgba(0,0,0,0.9);
+        }
+
+        .steering-wheel-top {
+            position: absolute;
+            bottom: -220px;
+            width: 580px;
+            height: 580px;
+            border: 55px solid #151515;
+            border-radius: 50%;
+            z-index: 100;
+            box-shadow: 0 0 80px rgba(0,0,0,1), inset 0 0 30px rgba(255,255,255,0.05);
+            background: transparent;
+        }
+
+        .bezel {
+            background: #0a0a0a;
+            border: 12px solid #1a1a1a;
+            border-radius: 100px 100px 30px 30px;
+            padding: 45px;
+            display: flex;
+            gap: 50px;
+            position: relative;
+            z-index: 50;
+            box-shadow: 0 -30px 100px rgba(0,0,0,0.8);
+        }
+
+        .gauge-inner {
+            background: radial-gradient(circle at center, #151515 0%, #000 100%);
+            box-shadow: inset 0 0 40px rgba(0,0,0,1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 40%, rgba(255,255,255,0.01) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* --- PANNEAUX INDEX --- */
+        .sign-card {
+            background: #0d0d0d;
+            border: 1px solid #1f1f1f;
+            padding: 20px;
+            border-radius: 18px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sign-card:hover {
+            border-color: var(--quebec-blue);
+            transform: translateY(-10px) scale(1.05);
+            background: #121212;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .side-nav {
+            position: fixed;
+            left: 0; top: 0; bottom: 0; width: 80px;
+            background: #000; border-right: 1px solid #1a1a1a;
+            display: flex; flex-direction: column; align-items: center; padding-top: 30px; z-index: 2000;
+        }
+
+        .nav-item {
+            width: 50px; height: 50px; margin-bottom: 20px; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; color: #444;
+            transition: 0.3s;
+        }
+
+        .nav-item.active { background: var(--quebec-blue); color: #fff; box-shadow: 0 0 20px var(--quebec-blue); }
+
+        .lcd-screen {
+            background: #020202;
+            border: 2px solid #111;
+            box-shadow: inset 0 0 20px rgba(0,242,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="side-nav">
+        <div class="nav-item active" id="btn-cockpit" title="Vue Cockpit">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+        </div>
+        <div class="nav-item" id="btn-sign" title="Signalisation">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/></svg>
+        </div>
+    </div>
+
+    <div class="main-stage ml-[80px]">
+        
+        <!-- MODE COCKPIT -->
+        <div id="view-cockpit" class="h-screen flex flex-col">
+            <div class="scenery">
+                <div class="road"><div class="road-lines"></div></div>
+                <!-- Camion/Véhicule avant dessiné -->
+                <div class="absolute left-1/2 bottom-12 -translate-x-1/2 w-64 h-40 opacity-90 drop-shadow-2xl">
+                    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20,100 L180,100 L175,60 L25,60 Z" fill="#222" />
+                        <rect x="15" y="85" width="170" height="25" rx="5" fill="#cc0000" />
+                        <rect x="25" y="90" width="30" height="12" fill="#ffcc00" opacity="0.8" />
+                        <rect x="145" y="90" width="30" height="12" fill="#ffcc00" opacity="0.8" />
+                        <rect x="80" y="105" width="40" height="8" fill="#111" />
+                    </svg>
+                </div>
+
+                <div class="absolute top-10 flex justify-center w-full">
+                    <div class="max-w-xl w-full bg-black/80 backdrop-blur-2xl border border-white/10 p-8 rounded-3xl shadow-[0_0_100px_rgba(0,0,0,1)]">
+                        <div id="q-text" class="text-base font-bold text-white mb-6">Expertise en conduite lourde : Prêt pour le test ?</div>
+                        <div id="choices-container" class="space-y-3"></div>
+                        <button id="next-btn" class="hidden mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Validation & Prochaine Question</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-frame">
+                <div class="steering-wheel-top"></div>
+                <div class="bezel">
+                    <!-- RPM -->
+                    <div class="w-[300px] h-[300px] rounded-full border-[10px] border-[#151515] gauge-inner">
+                        <div class="glass-shimmer"></div>
+                        <div id="ndl-rpm" class="absolute bottom-1/2 left-1/2 w-1.5 h-32 bg-gradient-to-t from-red-600 to-orange-400 origin-bottom -translate-x-1/2 transition-all duration-1000" style="transform: rotate(-120deg)"></div>
+                        <div class="absolute inset-0 flex items-center justify-center pt-28 text-[10px] text-zinc-600 font-black tracking-widest">RPM X 1000</div>
+                    </div>
+
+                    <!-- CENTRE LCD -->
+                    <div class="w-[480px] h-[300px] lcd-screen rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                            <span class="text-[10px] text-blue-500 font-black italic">SAAQ EXPERT SYSTEM v11.0</span>
+                            <span id="air-val" class="text-sm text-white font-mono">AIR: 118 PSI</span>
+                        </div>
+                        <div class="text-center">
+                            <h2 id="lcd-status" class="text-xl font-black text-blue-400 tracking-[6px] uppercase animate-pulse">Système Opérationnel</h2>
+                        </div>
+                        <div class="grid grid-cols-6 gap-6" id="icon-bank"></div>
+                    </div>
+
+                    <!-- VITESSE -->
+                    <div class="w-[300px] h-[300px] rounded-full border-[10px] border-[#151515] gauge-inner">
+                        <div class="glass-shimmer"></div>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-7xl font-black text-white font-['Orbitron']" id="speed-txt">0</span>
+                            <span class="text-[10px] text-zinc-600 font-bold tracking-[4px] mt-2">KM/H</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE PANNEAUX -->
+        <div id="view-sign" class="hidden h-screen overflow-y-auto bg-[#050505] p-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-end mb-16 border-b border-white/10 pb-10">
+                    <div>
+                        <h1 class="text-5xl font-black text-white italic tracking-tighter uppercase">Signalisation Routière Québec</h1>
+                        <p class="text-zinc-500 text-sm tracking-[8px] mt-4 uppercase">100 Modèles Uniques - Normes MTQ</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8" id="main-sign-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GÉNÉRATEUR DE PICTOGRAMMES RÉALISTES ---
+        function drawPictogram(id) {
+            const colors = { black: '#000', white: '#fff' };
+            const p = (path, stroke=6) => `<path d="${path}" stroke="currentColor" stroke-width="${stroke}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            
+            const pictos = [
+                p("M50 20 V80 M35 40 L50 20 L65 40"), // Tout droit
+                p("M30 60 H70 M50 60 V30"), // Intersection T
+                p("M30 80 Q50 80 50 30 L40 45 M50 30 L60 45"), // Courbe prononcée
+                `<circle cx="50" cy="35" r="8" fill="currentColor"/><path d="M40 85 L50 60 L60 85 M45 70 H55" stroke="currentColor" stroke-width="5" fill="none"/>`, // Piéton
+                `<rect x="25" y="45" width="50" height="25" fill="currentColor"/><circle cx="35" cy="75" r="5" fill="currentColor"/><circle cx="65" cy="75" r="5" fill="currentColor"/>`, // Camion
+                p("M20 50 H80 M20 40 V60 M80 40 V60", 4), // Pont
+                p("M30 30 L70 70 M70 30 L30 70", 10), // X (Croisement)
+                `<circle cx="50" cy="55" r="22" stroke="currentColor" stroke-width="5" fill="none"/><path d="M50 33 L58 41 M50 33 L42 41" stroke="currentColor" stroke-width="3" fill="none"/>`, // Rond-point
+                p("M35 80 V20 M65 80 L55 20", 8), // Rétrécissement
+                `<rect x="30" y="25" width="40" height="30" fill="currentColor"/><rect x="30" y="55" width="5" height="25" fill="currentColor"/>`, // Chantier
+                p("M50 25 L50 60 M50 75 V76", 8), // Danger exclamation
+                p("M30 50 Q50 10 70 50 T70 90", 6), // Sinueux
+                p("M20 70 L50 30 L80 70 Z", 6), // Montée
+                `<rect x="40" y="30" width="20" height="40" rx="3" fill="currentColor"/>`, // Obstacle
+                p("M30 20 H70 M30 80 H70 M50 20 V80", 5), // H (Hôpital)
+                p("M30 70 L50 30 L70 70 H30", 4), // École
+                p("M20 50 L40 30 L80 70", 8), // Virage en épingle
+                p("M30 30 L70 70 M30 70 L70 30", 12), // Interdiction accès
+                `<path d="M30 40 L50 20 L70 40 M50 20 V80" stroke="currentColor" stroke-width="8" fill="none"/>`, // Sens unique
+                `<circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="8" fill="none"/><path d="M30 30 L70 70" stroke="currentColor" stroke-width="8"/>` // Interdiction cercle
+            ];
+            return pictos[id % pictos.length];
+        }
+
+        const RENDERER = {
+            stop: () => `<svg viewBox="0 0 100 100"><path d="M30 5 L70 5 L95 30 L95 70 L70 95 L30 95 L5 70 L5 30 Z" fill="#cc0000" stroke="#fff" stroke-width="2"/><text x="50" y="62" text-anchor="middle" font-weight="900" font-size="20" fill="white">ARRÊT</text></svg>`,
+            speed: (v) => `<svg viewBox="0 0 100 120"><rect x="5" y="5" width="90" height="110" rx="5" fill="white" stroke="#000" stroke-width="2"/><text x="50" y="32" text-anchor="middle" font-weight="900" font-size="12" fill="black">MAXIMUM</text><text x="50" y="95" text-anchor="middle" font-weight="900" font-size="58" fill="black">${v}</text></svg>`,
+            danger: (i) => `<svg viewBox="0 0 100 100" style="color: black"><path d="M50 5 L95 50 L50 95 L5 50 Z" fill="#ffd500" stroke="#000" stroke-width="3"/>${drawPictogram(i)}</svg>`,
+            work: (i) => `<svg viewBox="0 0 100 100" style="color: black"><path d="M50 5 L95 50 L50 95 L5 50 Z" fill="#ff8800" stroke="#000" stroke-width="3"/>${drawPictogram(i + 7)}</svg>`,
+            info: (i) => `<svg viewBox="0 0 100 100" style="color: white"><rect x="5" y="5" width="90" height="90" rx="10" fill="#003399" stroke="#fff" stroke-width="2"/>${drawPictogram(i + 12)}</svg>`
+        };
+
+        const questions = [
+            { q: "Quelle est la procédure si la pression d'air descend sous 60 PSI ?", choices: ["Continuer prudemment", "S'arrêter immédiatement (Sécurité)", "Augmenter le régime moteur", "Désactiver l'ABS"], correct: 1, action: () => setDashboardAlarme() },
+            { q: "Le régime moteur est en zone rouge (2500+). Que faire ?", choices: ["Changer de rapport (vitesse supérieure)", "Accélérer encore plus", "Éteindre le moteur en roulant", "Utiliser le frein moteur"], correct: 0, action: () => setHighRPM() }
+        ];
+
+        let currentQ = 0;
+
+        function init() {
+            // Générer 100 panneaux
+            const grid = document.getElementById('main-sign-grid');
+            for(let i=0; i<100; i++) {
+                const card = document.createElement('div');
+                card.className = "sign-card";
+                let content = "";
+                let type = "Inconnu";
+
+                if(i === 0) { content = RENDERER.stop(); type="Arrêt"; }
+                else if(i < 15) { content = RENDERER.speed(10 + (i*10)); type=`Vitesse ${10+(i*10)}`; }
+                else if(i < 45) { content = RENDERER.danger(i); type="Danger"; }
+                else if(i < 75) { content = RENDERER.work(i); type="Chantier"; }
+                else { content = RENDERER.info(i); type="Information"; }
+
+                card.innerHTML = `<div class="w-28 h-28 mb-6 drop-shadow-lg">${content}</div><span class="text-[10px] font-black uppercase text-zinc-500 tracking-[3px]">${type}</span><span class="text-[8px] font-mono text-zinc-700 mt-2">CODE-MTQ-${2000+i}</span>`;
+                grid.appendChild(card);
+            }
+
+            // Icônes dashboard
+            const icons = {
+                oil: '<path d="M18,15V17H22V15H18M18,11V13H22V11H18M18,7V9H22V7H18M3,5V19A2,2 0 0,0 5,21H17V19H5V5H17V3H5A2,2 0 0,0 3,5Z"/>',
+                engine: '<path d="M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18L7,20H18L20,18V10L18,8H15V6H18V4H15V2H10V4H7Z"/>',
+                battery: '<path d="M16,20H8V6H16M16.67,4H15V2H9V4H7.33A0.67,0.67 0 0,0 6.67,4.67V21.33A0.67,0.67 0 0,0 7.33,22H16.67A0.67,0.67 0 0,0 17.33,21.33V4.67A0.67,0.67 0 0,0 16.67,4Z"/>'
+            };
+
+            const bank = document.getElementById('icon-bank');
+            Object.entries(icons).forEach(([key, path]) => {
+                const wrap = document.createElement('div');
+                wrap.innerHTML = `<svg id="icon-${key}" class="w-6 h-6 text-zinc-800 transition-all" viewBox="0 0 24 24"><path fill="currentColor" d="${path}"/></svg>`;
+                bank.appendChild(wrap);
+            });
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-text').innerText = q.q;
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+            document.getElementById('next-btn').classList.add('hidden');
+
+            q.choices.forEach((c, i) => {
+                const b = document.createElement('button');
+                b.className = "w-full text-left p-5 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all";
+                b.innerText = c;
+                b.onclick = () => {
+                    document.querySelectorAll('#choices-container button').forEach(btn => btn.disabled = true);
+                    if(i === q.correct) {
+                        b.classList.add('border-green-500', 'bg-green-500/10');
+                        if(q.action) q.action();
+                    } else {
+                        b.classList.add('border-red-500', 'bg-red-500/10');
+                    }
+                    document.getElementById('next-btn').classList.remove('hidden');
+                };
+                container.appendChild(b);
+            });
+        }
+
+        function setDashboardAlarme() {
+            document.getElementById('lcd-status').innerText = "ALERTE BASSE PRESSION";
+            document.getElementById('lcd-status').style.color = "#ff3300";
+            document.getElementById('air-val').innerText = "AIR: 52 PSI";
+            document.getElementById('icon-engine').style.color = "#ff3300";
+        }
+
+        function setHighRPM() {
+            document.getElementById('ndl-rpm').style.transform = "rotate(75deg)";
+            document.getElementById('lcd-status').innerText = "SURRÉGIME MOTEUR";
+            document.getElementById('lcd-status').style.color = "#ffaa00";
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            currentQ = (currentQ + 1) % questions.length;
+            renderQuestion();
+        };
+
+        document.getElementById('btn-cockpit').onclick = () => {
+            document.getElementById('view-cockpit').classList.remove('hidden');
+            document.getElementById('view-sign').classList.add('hidden');
+            document.getElementById('btn-cockpit').classList.add('active');
+            document.getElementById('btn-sign').classList.remove('active');
+        };
+
+        document.getElementById('btn-sign').onclick = () => {
+            document.getElementById('view-cockpit').classList.add('hidden');
+            document.getElementById('view-sign').classList.remove('hidden');
+            document.getElementById('btn-cockpit').classList.remove('active');
+            document.getElementById('btn-sign').classList.add('active');
+        };
+
+        window.onload = init;
+    </script>
+</body>
+</html>
